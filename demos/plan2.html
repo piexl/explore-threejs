@@ -18,33 +18,34 @@
 		</style>
 	</head>
 	<body>
-		<script src="http://techbrood.com/threejs/build/three.min.js"></script>
-		<script src="http://techbrood.com/threejs/examples/js/libs/dat.gui.min.js"></script>
-		<script src="http://techbrood.com/threejs/examples/js/controls/OrbitControls.js"></script>
-
+		<script src="../lib/three.js/three.js"></script>
+        <script src="../lib/three.js/OrbitControls.js"></script>
 		<script>
-
-			var gui = new dat.GUI();
+			//构建场景
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 50 );
 			camera.position.z = 30;
-
             var renderer = new THREE.WebGLRenderer({
-                antialias: true,
                 alpha: true
             });
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
+			// 坐标线
+			var axesHelper = new THREE.AxesHelper( 100 );
+			scene.add( axesHelper );
+
+			//控制器
 			var orbit = new THREE.OrbitControls( camera, renderer.domElement );
 			orbit.enableZoom = false;
 
+			//设置环境光
 			var ambientLight = new THREE.AmbientLight(0xffffff);
 			scene.add(ambientLight);
 
+			// 创建模型
 			var mesh = new THREE.Object3D()
-
 			//设置线段样式
 			mesh.add( new THREE.LineSegments(
 				new THREE.Geometry(),
@@ -53,75 +54,44 @@
 					transparent: true,
 					opacity: 0.5
 				} )
-
 			) );
 
+			//设置模型的材质
 			mesh.add( new THREE.Mesh(
 				new THREE.Geometry(),
 				new THREE.MeshPhongMaterial( {
 					map: new THREE.TextureLoader().load('../imgs/texture.jpg?'+new Date().getTime()),
-					// color: 0xffffff,
-					// emissive: 0x072534,
-					// side: THREE.DoubleSide,
-					// shading: THREE.FlatShading,
 				} )
 			));
-
-
-			function updateGroupGeometry( mesh, geometry ) {
-				mesh.children[ 0 ].geometry.dispose();
-				mesh.children[ 1 ].geometry.dispose();
-				mesh.children[ 0 ].geometry = new THREE.WireframeGeometry( geometry );
-				mesh.children[ 1 ].geometry = geometry;
-			}
-
-			function TetrahedronGeometry() {
-				var data = {
-					radius : 10,
-					detail : 0,
-				};
-				function generateGeometry() {
-					updateGroupGeometry( mesh,
-						new THREE.TetrahedronGeometry(
-							data.radius, data.detail
-						)
-					);
-				}
-				var folder = gui.addFolder( 'THREE.TetrahedronGeometry' );
-				folder.add( data, 'radius', 1, 20 ).onChange( generateGeometry );
-				folder.add( data, 'detail', 0, 5 ).step( 1 ).onChange( generateGeometry );
-				generateGeometry();
-			}
-			TetrahedronGeometry();
-			var options = {};
+			//四面几何体的类,第一个参数为四面体的半径，第二个参数增加的单数，如果不为这不是四面体
+			var geometry = new THREE.TetrahedronGeometry(14, 0);
+			mesh.children[ 0 ].geometry.dispose();
+			mesh.children[ 1 ].geometry.dispose();
+			mesh.children[ 0 ].geometry = new THREE.WireframeGeometry( geometry );
+			mesh.children[ 1 ].geometry = geometry;
 			scene.add( mesh );
 
-			// 坐标线
-			var axesHelper = new THREE.AxesHelper( 100 );
-			scene.add( axesHelper );
 			//包围盒的辅助对象
 			var box = new THREE.BoxHelper( mesh, 0xffff00 );
 			scene.add( box );
 
-
-			var prevFog = false;
-
+			//渲染器
 			var render = function () {
 				requestAnimationFrame( render );
 				var time = Date.now() * 0.001;
-				if ( ! options.fixed ) {
+				if(mesh.rotation.y <= Math.PI*2){
 					mesh.rotation.x += 0.005;
 					mesh.rotation.y += 0.005;
 				}
 				renderer.render( scene, camera );
 			};
+			render();
 
 			window.addEventListener( 'resize', function () {
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
 			}, false );
-			render();
 		</script>
 	</body>
 </html>
