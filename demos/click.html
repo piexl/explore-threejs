@@ -1,0 +1,127 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <title>interaction many event support</title>
+    <style>
+        * {
+            margin: 0;
+        }
+
+        body {
+            position: relative;
+            user-select: none;
+            background: #41b882;
+        }
+
+        .title {
+            color: #fff;
+            padding-bottom: 20px;
+        }
+
+        #event-box {
+            position: absolute;
+            width: 100%;
+            max-height: 45%;
+            padding: 20px 50px;
+            background: #35485d;
+            text-align: center;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .marker {
+            display: inline-block;
+            height: 30px;
+            margin: 5px 10px;
+            padding: 0 10px;
+            line-height: 28px;
+            color: #41b882;
+            font-weight: 400;
+            border: 1px solid #41b882;
+            border-radius: 15px;
+            transition: 0.1s all ease;
+        }
+
+        .marker.active {
+            background: #41b882;
+            color: #ffffff;
+        }
+
+        @media only screen and (max-width: 600px) {
+            #event-box {
+                padding: 20px 0;
+            }
+        }
+    </style>
+    <!-- <script src="//res.wx.qq.com/mmbizwap/zh_CN/htmledition/js/vconsole/3.0.0/vconsole.min.js"></script>
+      <script>
+        new VConsole();
+      </script> -->
+</head>
+
+<body>
+    <canvas id="webgl"></canvas>
+    <script src="https://jasonchen1982.github.io/three.interaction.js/examples/libs/three/build/three.min.js"></script>
+    <script src="https://jasonchen1982.github.io/three.interaction.js/build/three.interaction.js"></script>
+    <script>
+        window.addEventListener('resize', onWindowResize, false);
+
+        var WIDTH = window.innerWidth;
+        var HEIGHT = window.innerHeight;
+        var camera = new THREE.PerspectiveCamera(60, WIDTH / HEIGHT, 0.01, 100);
+        var renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#webgl'),
+            antialias: true,
+        });
+        renderer.setClearColor(0x41b882);
+        renderer.setSize(WIDTH, HEIGHT);
+        var scene = new THREE.Scene();
+
+
+        var interaction = new THREE.Interaction(renderer, scene, camera);
+
+        var cube = new THREE.Mesh(
+            new THREE.BoxGeometry(3, 3, 3),
+            new THREE.MeshPhongMaterial({
+                color: 0xffffff
+            })
+        );
+        cube.cursor = 'pointer';
+        cube.position.y = -2;
+        cube.position.z = -10;
+        cube.name = 'cube';
+        scene.add(cube);
+
+        var ambient = new THREE.AmbientLight(0x666666);
+        scene.add(ambient);
+        var light = new THREE.PointLight(0xffffff);
+        light.position.set(20, 50, 10);
+        scene.add(light);
+
+
+        cube.on('click', function (ev) {
+            console.log('test');
+        });
+
+
+
+        function render() {
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+        }
+        render();
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+    </script>
+
+</body>
+
+</html>

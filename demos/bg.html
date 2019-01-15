@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>three.js webgl - particles - sprites</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        html,body{width:100%; height:100%;}
+        body {
+            margin:0;
+            font-family: '微软雅黑';
+            font-size: 15px;
+            line-height: 18px;
+            overflow: hidden;
+            background:url(../imgs/home_bg.jpg) no-repeat center center;
+            background-size:cover;
+        }
+
+        canvas { width: 100%; height: 100% }
+        #starsky{
+            width:100%;
+            height:100%;
+        }
+    </style>
+</head>
+<div id="starsky"></div>
+<body>
+    <script src="https://cdn.bootcss.com/jquery/2.0.2/jquery.js"></script>
+    <script src="https://threejs.org/build/three.js"></script>
+    <script src="https://threejs.org/examples/js/WebGL.js"></script>
+    <script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
+    <script>
+        function starsky($element){
+            if (WEBGL.isWebGLAvailable() === false) {
+                document.body.appendChild(WEBGL.getWebGLErrorMessage());
+            }
+            var camera, scene, renderer, stats, materials = [],
+                parameters;
+            var mouseX = 0,
+                mouseY = 0;
+
+            var windowHalfX = $element.width() / 2;
+            var windowHalfY = $element.height() / 2;
+
+            init();
+            animate();
+
+            function init() {
+
+                camera = new THREE.PerspectiveCamera(75, $element.width() / $element.height(), 1, 2000);
+                camera.position.z = 1000;
+
+                scene = new THREE.Scene();
+                scene.fog = new THREE.FogExp2(0x000000, 0.0008);
+
+                var geometry = new THREE.BufferGeometry();
+                var vertices = [];
+
+                var textureLoader = new THREE.TextureLoader();
+
+                var sprite1 = textureLoader.load('../imgs/snowflake1.png');
+                var sprite2 = textureLoader.load('../imgs/snowflake1.png');
+                var sprite3 = textureLoader.load('../imgs/snowflake1.png');
+                var sprite4 = textureLoader.load('../imgs/snowflake1.png');
+                var sprite5 = textureLoader.load('../imgs/snowflake1.png');
+
+                for (var i = 0; i < 300; i++) {
+                    var x = Math.random() * 2000 - 1000;
+                    var y = Math.random() * 2000 - 1000;
+                    var z = Math.random() * 2000 - 1000;
+                    vertices.push(x, y, z);
+                }
+
+                geometry.addAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+                parameters = [
+                    [
+                        [1.0, 0.2, 0.5], sprite2, 8
+                    ],
+                    [
+                        [0.95, 0.1, 0.5], sprite3, 5
+                    ],
+                    [
+                        [0.90, 0.05, 0.5], sprite1, 4
+                    ],
+                    [
+                        [0.85, 0, 0.5], sprite5, 3
+                    ],
+                    [
+                        [0.80, 0, 0.5], sprite4, 2
+                    ]
+                ];
+
+                for (var i = 0; i < parameters.length; i++) {
+                    var color = parameters[i][0];
+                    var sprite = parameters[i][1];
+                    var size = parameters[i][2];
+
+                    materials[i] = new THREE.PointsMaterial({
+                        size: size,
+                        map: sprite,
+                        blending: THREE.AdditiveBlending,
+                        depthTest: false,
+                        transparent: true
+                    });
+                    var particles = new THREE.Points(geometry, materials[i]);
+
+                    particles.rotation.x = Math.random() * 6;
+                    particles.rotation.y = Math.random() * 6;
+                    particles.rotation.z = Math.random() * 6;
+                    scene.add(particles);
+
+                }
+                //
+                renderer = new THREE.WebGLRenderer({
+                    antialias: true,
+                    alpha: true
+                });
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.setSize($element.width(), $element.height());
+                $element.empty();
+                $element.append(renderer.domElement);
+
+                stats = new Stats();
+                $element.append(stats.dom);
+
+                window.addEventListener('resize', onWindowResize, false);
+            }
+
+            function onWindowResize() {
+                windowHalfX = $element.width() / 2;
+                windowHalfY = $element.height() / 2;
+                camera.aspect = $element.width() / $element.height();
+                camera.updateProjectionMatrix();
+                renderer.setSize($element.width(), $element.height());
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                render();
+                stats.update();
+            }
+
+            function render() {
+                var time = Date.now() * 0.00005;
+                camera.position.x += (mouseX - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY - camera.position.y) * 0.05;
+
+                camera.lookAt(scene.position);
+                for (var i = 0; i < scene.children.length; i++) {
+                    var object = scene.children[i];
+                    if (object instanceof THREE.Points) {
+                        object.rotation.y = time * (i < 4 ? i + 1 : -(i + 1));
+                    }
+                }
+                
+                renderer.render(scene, camera);
+            }
+        }
+        starsky($("#starsky"));
+
+    </script>
+</body>
+
+</html>

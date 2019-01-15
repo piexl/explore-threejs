@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Three.js Geometry Browser</title>
+		<style>
+			body {
+				margin:0;
+				font-family: '微软雅黑';
+				font-size: 15px;
+				line-height: 18px;
+				overflow: hidden;
+				background:url(../imgs/home_bg.jpg) no-repeat center center;
+				background-size:cover;
+			}
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="../lib/three.js/three.js"></script>
+        <script src="../lib/three.js/OrbitControls.js"></script>
+        <script src="../lib/three.js/OBJLoader.js" type="text/javascript"></script>
+
+		<script>
+            //场景设置
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 50 );
+			camera.position.z = 30;
+            var renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true //canvas是否包含alpha
+            });
+			renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+
+			//坐标辅助线
+			var axesHelper = new THREE.AxesHelper( 100 );
+			scene.add( axesHelper );
+
+            //控制器
+            var controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableZoom = false;
+            
+            //创建一个环境光，并增加到场景中
+            var ambientLight = new THREE.AmbientLight(0xffffff);
+            scene.add(ambientLight);
+
+            //加载模型
+            var mesh;
+            var manager = new THREE.LoadingManager(); //加载管理器
+            //导入模型纹理Texture
+            var texture = new THREE.Texture();
+            var loader = new THREE.ImageLoader(manager);
+            loader.load('../imgs/obj/texture.jpg', function (image) {
+                texture.image = image;
+                texture.needsUpdate = true;
+            });
+            // 创建loader变量，用于导入模型
+            var loader = new THREE.OBJLoader(manager);
+            //第一个表示模型路径，第二个表示完成导入后的回调函数，一般我们需要在这个回调函数中将导入的模型添加到场景中
+            loader.load('../imgs/obj/tetrahedron.obj', function (obj) {
+                obj.traverse(function (child) {
+                    if (child instanceof THREE.Mesh) {
+                        child.material.side = THREE.DoubleSide;
+                        child.material.map = texture;
+                    }
+                });
+                mesh = obj;//储存到全局变量中
+                mesh.position.y = 0;
+                scene.add(mesh);//将导入的模型添加到场景中
+                animate();
+            });
+
+            //渲染场景
+            function animate(){
+                requestAnimationFrame(animate);
+                if (mesh.rotation.y < Math.PI * 2) {
+                    mesh.rotation.y += 0.01;
+                    mesh.rotation.x += 0.01;
+                }
+                renderer.render(scene, camera);
+            }
+            
+            //窗口变化是更新相机和渲染器的大小
+            window.onresize = function () {
+                var w = window.innerWidth;
+                var h = window.innerHeight;
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            }
+		</script>
+	</body>
+</html>
