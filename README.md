@@ -646,8 +646,8 @@ render();
 
 ## 参考链接
 
-threejs官方文档: [https://threejs.org/docs/index.html](https://threejs.org/docs/index.html) (现在可切换中文文档了)
-threejs教程:[https://teakki.com/p/58a3ef1bf0d40775548c908f](https://teakki.com/p/58a3ef1bf0d40775548c908f)
-Three.js 现学现卖: [https://aotu.io/notes/2017/08/28/getting-started-with-threejs/](https://aotu.io/notes/2017/08/28/getting-started-with-threejs/)
-threejs+tweenjs实现3D粒子模型切换: [https://juejin.im/post/5b8d47cce51d4538bf55e3a8](https://juejin.im/post/5b8d47cce51d4538bf55e3a8)
-three.interaction.js(给threejs中模型增加事件的类库)：[https://github.com/jasonChen1982/three.interaction.js](https://github.com/jasonChen1982/three.interaction.js)
++ threejs官方文档: [https://threejs.org/docs/index.html](https://threejs.org/docs/index.html) (现在可切换中文文档了)
++ threejs教程:[https://teakki.com/p/58a3ef1bf0d40775548c908f](https://teakki.com/p/58a3ef1bf0d40775548c908f)
++ Three.js 现学现卖: [https://aotu.io/notes/2017/08/28/getting-started-with-threejs/](https://aotu.io/notes/2017/08/28/getting-started-with-threejs/)
++ threejs+tweenjs实现3D粒子模型切换: [https://juejin.im/post/5b8d47cce51d4538bf55e3a8](https://juejin.im/post/5b8d47cce51d4538bf55e3a8)
++ three.interaction.js(给threejs中模型增加事件的类库)：[https://github.com/jasonChen1982/three.interaction.js](https://github.com/jasonChen1982/three.interaction.js)
