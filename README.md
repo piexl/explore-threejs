@@ -101,7 +101,7 @@ cube.rotation.y += 0.01;
 
 ## 3D世界的深层了解
 
-## 四面的实现尝试一(引入模型法)
+## 四面体的实现尝试一(引入模型法)
 
 效果见页面[引入模型法](https://piexl.github.io/explore-threejs/demos/plan1.html)
 
@@ -202,7 +202,7 @@ function animate(){
 
 ***[注]** 加载模型的方法很多，具体根据你制作模型的软件和导出的模型的格式而定，obj形式只是其中一中而已*
 
-## 四面的实现尝试二（几何四面体实现）
+## 四面体的实现尝试二（几何四面体实现）
 
 效果见页面[几何四面体实现](https://piexl.github.io/explore-threejs/demos/plan2.html)
 
@@ -295,7 +295,7 @@ render();
 
 增加模型的辅助线更有利于我们对模型的理解
 
-## 四面的实现尝试三（顶点构造法）
+## 四面体的实现尝试三（顶点构造法）
 
 效果见页面[顶点构造法](https://piexl.github.io/explore-threejs/demos/plan3.html)
 
