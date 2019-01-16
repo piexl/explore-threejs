@@ -204,6 +204,8 @@ function animate(){
 
 ## 四面的实现尝试二（几何四面体实现）
 
+效果见页面[几何四面体实现](https://piexl.github.io/explore-threejs/demos/plan2.html)
+
 优点：实现简单，大小，材质等参数更改方便
 缺点：贴图无规则，无法贴图
 
@@ -295,6 +297,8 @@ render();
 
 ## 四面的实现尝试三（顶点构造法）
 
+效果见页面[顶点构造法](https://piexl.github.io/explore-threejs/demos/plan3.html)
+
 优点：材质贴图可分开，中心点稳定不会偏移
 缺点：构造复杂,运算效率低
 
@@ -336,6 +340,10 @@ var interaction = new THREE.Interaction(renderer, scene, camera);
 ```
 
 ### 创建四面体的每个顶点及构造四个面
+
+利用下面的这张图有助于我们理解这个四面体的构建，设定一个基本单位r，四面的四个点顶点位置如下图：
+
+![构建四面体的点](./imgs/tetrahedral1.png)
 
 ```js
 //定义几何点
@@ -402,6 +410,21 @@ scene.add( box );
 
 ### 为四面体增加各面的法线点
 
+要寻找过四面体每个面过中心点的法线，即过此面的中心且垂直于这个面的点构成的线.
+以四面体ABC面为例：
+![四面体面法线](./imgs/tetrahedral2.png)
+C为ABC面的中心，
+∵ Bb ⊥ cb 且 eb ⊥ Bb
+∴ Bb ⊥ bce
+∴ Bb ⊥ ec
+同理可证 Ba ⊥ ec
+∵ Bb ⊥ ec 且 Ba ⊥ ec
+∴ ec ⊥ ABC
+所以 ec为面ABC的法线，e为ABC面法线上的点
+
+其他面的发现点如下图中（efgh）：
+![革面的发现点](./imgs/tetrahedral3.png)
+
 ```js
 //四个面的法线点
 var pointsGeometry = new THREE.Geometry();
@@ -429,7 +452,29 @@ group.autoRate = true;
 scene.add( group );
 ```
 
-### 监听当前准东到那个面
+### 监听当前正对到那个面
+
+四面体转动过程中法线点的新坐标获取：
+
+当四面体绕绕Y轴转动转动（Y坐标不发生变化）:
+Y轴准东的角度:`ralationY = group.rotation.y`
+开始时在水平面的角度:`startY = Math.abs(Math.atan(x/z))`
+那么Y轴总角度为:`degY = startY + ralationY`
+水平面转动的半径为:`fR = Math.sqrt(Math.pow(x, 2) + Math.pow(z, 2))`
+转动后打的点x坐标为: `x = fR * (z / x > 0 ? Math.sin(degY) : Math.cos(degY)) * (x > 0 ? 1 : -1)`
+ 
+以法线点e(-r, r, r)和f(-r, -r, -r)为例参考下图：
+![法线点Y轴转动变化参考](./imgs/tetrahedral4.png)
+
+当四面体绕绕X轴转动转动（X坐标不发生变化）:
+X轴准东的角度:`ralationX = group.rotation.x`
+开始时在竖直面的角度:`startX = Math.abs(Math.atan(y/z)),`
+那么X轴总角度为:`degX = startX + ralationX`
+竖直面转动的半径为:`sR = Math.sqrt(Math.pow(y, 2) + Math.pow(z, 2))`
+转动后打的点y坐标为: `y = sR * (z / y > 0 ? Math.cos(degX) : Math.sin(degX)) * (y > 0 ? 1 : -1)`
+
+以法线点e(-r, r, r)和f(-r, -r, -r)为例参考下图：
+![法线点X轴转动变化参考](./imgs/tetrahedral5.png)
 
 ```js
 //法线点的初始位置
@@ -441,9 +486,7 @@ var originalPonits = [
 ];
 //监听当前属于哪个面
 function checkCurFace(){
-    var degCell = 2 * Math.PI / 360,
-        orbitX = orbit.getPolarAngle(),
-        orbitY = orbit.getAzimuthalAngle();
+    var degCell = 2 * Math.PI / 360;
     var distance = [];//与相机位置的距离
     originalPonits.forEach(function (item, index) {
         var itemOldPoint = normalPoints[index];
@@ -476,6 +519,7 @@ function checkCurFace(){
 ```
 
 这个检查函数中使用了立体结合的一些知识，最终根据转动时每个法线点坐标更新，获得它与相机两点点的距离，距离最短的就是当前的这是激活面。
+
 
 ### 给四面体增加事件
 
@@ -520,6 +564,85 @@ render();
 在每次更新是检查当前属于那个面
 
 ## 粒子背景的实现
+
+效果见页面[粒子背景](https://piexl.github.io/explore-threejs/demos/particle-bg.html)
+
+**实现方法**
+
+### 构建场景
+
+```js
+//创建场景
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+camera.position.z = 1000;
+var renderer = new THREE.WebGLRenderer({
+    alpha: true
+});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild( renderer.domElement );
+```
+
+### 增加光源
+
+```js
+//光源添加到场景中
+var ambientLight = new THREE.AmbientLight(0xffffff);
+scene.add(ambientLight);
+```
+
+### 创建星空点
+
+```js
+//创建星空点
+var starsGeometry = new THREE.Geometry();
+for ( var i = 0; i < 1000; i ++ ) {
+    var star = new THREE.Vector3();
+    star.x = Math.random() * 2000 - 1000;
+    star.y = Math.random() * 2000 - 1000;
+    star.z = Math.random() * 2000 - 1000;
+    starsGeometry.vertices.push( star );
+}
+var textureLoader = new THREE.TextureLoader();
+var sprite = textureLoader.load('../imgs/snowflake1.png');
+var PointSizes = [2,3,4,5,6,7,8,9];
+var starsMaterial = new THREE.PointsMaterial( {
+    color: 0xfffffff,
+    size: PointSizes[parseInt(Math.random()*7)],
+    map: sprite,
+} );
+var starField = new THREE.Points( starsGeometry, starsMaterial );
+scene.add( starField );
+```
+
+粒子类Points( geometry, material )
+
++ geometry — （可选）是一个[Geometry](https://threejs.org/docs/index.html#api/zh/core/Geometry)或者[BufferGeometry](https://threejs.org/docs/index.html#api/zh/core/BufferGeometry)的实例，默认值是一个新的[BufferGeometry](https://threejs.org/docs/index.html#api/zh/core/BufferGeometry)
++ material — （可选） 是一个对象，默认值是一个具有随机颜色的新的 [PointsMaterial](https://threejs.org/docs/index.html#api/zh/materials/PointsMaterial)
+
+### 渲染场景
+
+```js
+// 渲染器
+function render() {
+    var time = Date.now() * 0.00005;
+    camera.position.x += camera.position.x * 0.05;
+    camera.position.y += camera.position.y * 0.05;
+    camera.lookAt(scene.position);
+    for (var i = 0; i < scene.children.length; i++) {
+        var object = scene.children[i];
+        if (object instanceof THREE.Points) {
+            object.rotation.y = time * (i < 4 ? i + 1 : -(i + 1));
+        }
+    }
+    requestAnimationFrame(render);
+    renderer.render(scene, camera);
+}
+render();
+```
+
+每次渲染的时候修改相机的x和y的位置，让星空转起来。修改每个点的y坐标让点有自身的变化。
 
 ## 参考链接
 

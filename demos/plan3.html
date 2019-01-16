@@ -136,9 +136,7 @@
 			];
 			//监听当前属于哪个面
 			function checkCurFace(){
-				var degCell = 2 * Math.PI / 360,
-					orbitX = orbit.getPolarAngle(),
-					orbitY = orbit.getAzimuthalAngle();
+				var degCell = 2 * Math.PI / 360;
 				var distance = [];//与相机位置的距离
 				originalPonits.forEach(function (item, index) {
 					var itemOldPoint = normalPoints[index];

@@ -25,8 +25,6 @@
 
 <script src="../lib/three.js/three.js"></script>
 <script>
-    var mouseX = 0,
-        mouseY = 0;
     //创建场景
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
@@ -65,8 +63,8 @@
     // 渲染器
     function render() {
         var time = Date.now() * 0.00005;
-        camera.position.x += (mouseX - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY - camera.position.y) * 0.05;
+        camera.position.x += camera.position.x * 0.05;
+        camera.position.y += camera.position.y * 0.05;
         camera.lookAt(scene.position);
         for (var i = 0; i < scene.children.length; i++) {
             var object = scene.children[i];
