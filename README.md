@@ -96,7 +96,7 @@ cube.rotation.x += 0.01;
 cube.rotation.y += 0.01;
 ```
 
-最终时间效果如下：
+最终实现效果如下：
 <iframe src="https://codepen.io/piexl-the-selector/embed/maaQrK" width="100%" height="300px" frameborder="0" scrolling="no"> </iframe>
 
 ## 3D世界的深层了解
@@ -422,8 +422,8 @@ C为ABC面的中心，
 ∴ ec ⊥ ABC
 所以 ec为面ABC的法线，e为ABC面法线上的点
 
-其他面的发现点如下图中（efgh）：
-![革面的发现点](./imgs/tetrahedral3.png)
+其他面的法线点如下图中（efgh）：
+![各面的法线点](./imgs/tetrahedral3.png)
 
 ```js
 //四个面的法线点
